@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manchacars · Encuentra tu coche</title>
+<meta name="description" content="Coches de ocasión revisados y con garantía en Manchacars. Elige el tuyo o cuéntanos qué buscas y te llamamos.">
+<meta name="theme-color" content="#0e0d0d">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#e84849; --red-dk:#c52f31; --red-deep:#9e1519; --red-soft:#fdeeee; --red-tint:#f9d6d6;
+  --ink:#141212; --night:#0e0d0d; --night-2:#1a1717; --bg:#f7f5f4; --card:#fff; --line:#ece6e4; --muted:#76706d; --text:#1c1918;
+  --ok:#22a05a;
+  --head:'Poppins',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.h{font-family:var(--head);font-weight:800;letter-spacing:-.02em;line-height:1.02}
+.r{color:var(--red)}
+
+/* ===== PANTALLA DE CARGA ===== */
+body.lock{overflow:hidden}
+#intro{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at 50% 45%,#fff 0%,#fbf6f5 60%,#f6e9e8 100%);cursor:pointer;transition:transform .75s cubic-bezier(.7,0,.2,1)}
+#intro.out{transform:translateY(-100%)}
+#intro .lg{width:min(340px,72vw);opacity:0;transform:translateY(14px) scale(.96);animation:lgIn .7s .1s cubic-bezier(.2,.8,.2,1) forwards}
+#intro .tg{font:600 12px Inter,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#8a807d;opacity:0;animation:lgIn .6s .35s ease forwards}
+@keyframes lgIn{to{opacity:1;transform:none}}
+.road{position:relative;width:min(620px,84vw);height:8px;border-radius:8px;background:#efdfdd;margin-top:78px}
+.road:before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.9) 0 14px,transparent 14px 28px);opacity:.7}
+.road .fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--p,0)*100%);border-radius:8px;background:linear-gradient(90deg,var(--red-dk),var(--red));box-shadow:0 0 16px rgba(232,72,73,.6)}
+.road .icar{position:absolute;bottom:3px;left:calc(var(--p,0)*100%);width:150px;transform:translateX(-88%);transition:transform .9s cubic-bezier(.6,0,.3,1)}
+#intro.go .road .icar{transform:translateX(130vw)}
+.pct{font:700 13px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a807d;margin-top:16px}
+.pct b{color:var(--red)}
+.isvg{display:block;width:100%;height:auto;overflow:visible}
+.isvg .wh{transform-box:fill-box;transform-origin:center;animation:spin .4s linear infinite}
+.isvg .bd{animation:bob .3s ease-in-out infinite alternate}
+.isvg .sp line{animation:speed .5s linear infinite}
+.isvg .sp line:nth-child(2){animation-delay:.15s}.isvg .sp line:nth-child(3){animation-delay:.3s}
+@keyframes bob{to{transform:translateY(-1px)}}
+@keyframes speed{0%{opacity:0;transform:translateX(10px)}40%{opacity:1}100%{opacity:0;transform:translateX(-28px)}}
+
+/* ===== HEADER ===== */
+.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:box-shadow .3s}
+.top.sh{box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.brand img{height:30px;width:auto}
+.nav{display:flex;align-items:center;gap:4px}
+.nav a{text-decoration:none;font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;transition:background .2s,color .2s}
+.nav a:hover{background:var(--red-soft);color:var(--red-dk)}
+.nav .home{display:flex;align-items:center;gap:6px}.nav .home svg{width:16px;height:16px}
+.nav .cta{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(232,72,73,.35)}
+.nav .cta:hover{background:var(--red-dk);color:#fff}
+
+/* ===== HERO + FORM ===== */
+.hero{position:relative;overflow:hidden;background:radial-gradient(700px 420px at 80% 20%,rgba(232,72,73,.30),transparent 70%),radial-gradient(600px 400px at 10% 100%,rgba(232,72,73,.16),transparent 70%),var(--night);color:#fff;padding:34px 0 64px}
+.hero:after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 120L120 0' stroke='white' stroke-opacity='.035'/%3E%3C/svg%3E");pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,500px);gap:clamp(28px,5vw,64px);align-items:center}
+.kick{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:#ffb3b3;background:rgba(232,72,73,.14);border:1px solid rgba(232,72,73,.35);padding:6px 12px;border-radius:999px}
+.kick i{width:7px;height:7px;border-radius:50%;background:var(--red);animation:ping 1.6s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(232,72,73,.7)}70%{box-shadow:0 0 0 9px rgba(232,72,73,0)}100%{box-shadow:0 0 0 0 rgba(232,72,73,0)}}
+.hl h1{font-size:clamp(38px,5.6vw,68px);margin:16px 0 0}
+.hl h1 .r{background:linear-gradient(90deg,#ff6b6c,var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 13px 7px 8px;font-size:13.5px;font-weight:600;opacity:0;transform:translateY(10px)}
+.ready .pill{animation:rise .6s cubic-bezier(.2,.8,.2,1) forwards}
+.ready .pill:nth-child(2){animation-delay:.1s}.ready .pill:nth-child(3){animation-delay:.2s}.ready .pill:nth-child(4){animation-delay:.3s}
+.pill b{width:20px;height:20px;border-radius:50%;background:var(--red);display:grid;place-items:center;flex:none}
+.pill svg{width:12px;height:12px;color:#fff}
+@keyframes rise{to{opacity:1;transform:none}}
+.see{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-weight:600;font-size:14.5px;color:#cfc9c7;text-decoration:none}
+.see b{color:#fff;border-bottom:2px solid var(--red)}
+.see svg{width:18px;height:18px;color:var(--red);animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(4px)}}
+
+.card{position:relative;background:var(--card);color:var(--text);border-radius:24px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);scroll-margin-top:80px}
+.chead{padding:20px 22px 0}
+.ch-row{position:relative}
+.chead h3{font-family:var(--head);font-weight:800;font-size:22px;letter-spacing:-.01em}
+.chead .st{font-size:13px;color:var(--muted);margin-top:2px}
+.stock-cta{position:absolute;right:0;top:4px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:12px;color:var(--red-dk);background:var(--red-soft);border:1px solid var(--red-tint);border-radius:999px;padding:4px 10px 4px 4px;transition:transform .2s,background .2s}
+.stock-cta:hover{transform:translateY(-2px);background:#fff}
+.stock-cta[hidden]{display:none}
+.sc-th{display:flex}
+.sc-th img{width:34px;height:22px;object-fit:contain;background:#fff;border-radius:999px;padding:2px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.sc-th img+img{margin-left:-12px}
+.stock-cta svg{width:13px;height:13px;animation:nudge 1.4s ease-in-out infinite}
+.pbar{position:relative;height:6px;border-radius:6px;background:var(--red-soft);margin:22px 8px 0 0}
+.pbar .fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:6px;background:linear-gradient(90deg,var(--red-dk),var(--red));box-shadow:0 0 10px rgba(232,72,73,.5);transition:width .6s cubic-bezier(.3,.9,.3,1)}
+.pbar .mv{position:absolute;bottom:2px;left:0;width:46px;transform:translateX(-80%);transition:left .6s cubic-bezier(.3,.9,.3,1)}
+.pbar.pulse .fill{animation:pulse .6s ease}
+@keyframes pulse{40%{box-shadow:0 0 22px 3px rgba(232,72,73,.7)}}
+.csvg{display:block;width:100%;height:auto;overflow:visible}
+.csvg .wh{transform-box:fill-box;transform-origin:center;animation:spin .45s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.still .wh{animation-play-state:paused}
+
+.selbox{display:none;margin:16px 22px 0;padding:12px;border-radius:16px;background:var(--red-soft);border:1.5px solid var(--red-tint)}
+.selbox.on{display:block;animation:in .4s ease}
+.sb-row{display:flex;align-items:center;gap:12px}
+.selbox img{width:86px;height:56px;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(0,0,0,.2))}
+.sb-txt{flex:1;min-width:0}
+.selbox b{display:block;font-family:var(--head);font-weight:700;font-size:16px;line-height:1.15}
+.selbox .sb-p{display:block;font-size:13px;font-weight:700;color:var(--red-dk);white-space:nowrap}
+.sb-act{display:flex;gap:4px;flex:none}
+.sb-act button{background:#fff;border:1px solid var(--red-tint);border-radius:999px;font-weight:600;font-size:12px;color:var(--red-dk);cursor:pointer;padding:6px 10px}
+.sb-act button:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.auto{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.auto span{display:inline-flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:4px 10px 4px 5px;font-size:12px;font-weight:600;opacity:0;transform:scale(.7);animation:chip .4s cubic-bezier(.3,1.5,.5,1) forwards}
+.auto span:before,.ckd:before{content:"";width:16px;height:16px;border-radius:50%;background:var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/10px no-repeat;flex:none}
+@keyframes chip{to{opacity:1;transform:none}}
+
+.wiz{padding:18px 22px 20px;min-height:360px;display:flex;flex-direction:column}
+.step{display:none;flex:1;flex-direction:column}
+.step.on{display:flex;animation:in .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes in{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+.q{font-family:var(--head);font-weight:800;font-size:22px;line-height:1.15;letter-spacing:-.01em;margin-bottom:14px}
+.ql{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2px 0 7px}
+.opts{display:grid;gap:8px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt label{position:relative;overflow:hidden;display:flex;align-items:center;gap:11px;min-height:52px;padding:10px 13px;border:1.5px solid var(--line);border-radius:14px;background:#fff;font-weight:600;font-size:14.5px;cursor:pointer;user-select:none;transition:border-color .18s,background .18s,color .18s,transform .15s,box-shadow .18s}
+.opt label:hover{border-color:#f0b3b3;transform:translateY(-1px);box-shadow:0 6px 14px rgba(232,72,73,.08)}
+.opt label:active{transform:scale(.97)}
+.opt input:checked+label{border-color:var(--red);background:var(--red-soft);color:var(--red-dk);box-shadow:0 0 0 3px rgba(232,72,73,.13)}
+.opt input:checked+label:after{content:"";position:absolute;right:10px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;animation:popin .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes popin{from{transform:scale(0)}}
+.opt input:focus-visible+label{outline:3px solid rgba(232,72,73,.35);outline-offset:2px}
+.c3 .opt label{justify-content:center;text-align:center;padding:9px 6px;min-height:46px;font-size:13.5px}
+.c3 .opt input:checked+label:after{display:none}
+.opt .ico{width:34px;height:34px;flex:none;color:var(--red)}
+.opt small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+/* animación al elegir */
+.rip{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(232,72,73,.28) 0%,rgba(232,72,73,.12) 60%,transparent 70%);transform:translate(-50%,-50%) scale(0);pointer-events:none;animation:rip .6s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rip{70%{opacity:1}to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+.opt label.boom{animation:boing .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes boing{0%{transform:scale(.93)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
+.opt label.boom .ico{animation:wiggle .5s ease}
+@keyframes wiggle{30%{transform:rotate(-10deg) scale(1.15)}60%{transform:rotate(6deg) scale(1.05)}}
+.spark{position:absolute;z-index:4;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--red);pointer-events:none;animation:spark .65s cubic-bezier(.2,.8,.3,1) forwards}
+.spark.y{background:#ffb703}.spark.l{width:5px;height:12px;border-radius:3px}
+@keyframes spark{from{transform:translate(0,0) rotate(var(--r)) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.2);opacity:0}}
+
+.field{margin-bottom:10px;position:relative}
+.field input{width:100%;height:54px;border:1.5px solid var(--line);border-radius:14px;padding:18px 14px 4px;font:500 16px Inter,sans-serif;color:var(--text);background:#fff;transition:border-color .18s,box-shadow .18s}
+.field label{position:absolute;left:15px;top:17px;font-size:15px;color:#9a918e;pointer-events:none;transition:all .18s}
+.field input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(232,72,73,.13)}
+.field input:focus+label,.field input:not(:placeholder-shown)+label{top:7px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.opt-tag{font-weight:500;opacity:.75;text-transform:none;letter-spacing:0}
+.fh{font-size:12px;color:var(--muted);margin:5px 2px 0}
+.field.okv input{border-color:var(--ok)}
+.field.okv:after{content:"✓";position:absolute;right:14px;top:16px;color:var(--ok);font-weight:800}
+.field.err input{border-color:var(--red)}
+.em{display:none;color:var(--red-dk);font-size:12.5px;font-weight:600;margin-top:4px}
+.err .em{display:block}.err .fh{display:none}
+.err{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:4px 0 14px;cursor:pointer}
+.consent input{margin-top:2px;width:18px;height:18px;accent-color:var(--red);flex:none}
+.summary{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px}
+.summary span{background:var(--red-soft);color:var(--red-dk);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600}
+
+.nav2{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px}
+.back{background:none;border:0;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;padding:8px 2px;visibility:hidden}
+.back.show{visibility:visible}
+.hint{font-size:12px;color:#b2a8a5}
+.nextb{display:none;background:var(--red);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:700;font-size:14px;cursor:pointer;animation:popin .3s;box-shadow:0 6px 16px rgba(232,72,73,.35)}
+.nextb:hover{background:var(--red-dk)}
+.nav2.ready .hint{display:none}.nav2.ready .nextb{display:block}
+.btn{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(180deg,#f05253,var(--red-dk));color:#fff;border:0;border-radius:16px;padding:16px 20px;font-family:var(--head);font-weight:800;font-size:19px;cursor:pointer;text-decoration:none;box-shadow:0 12px 28px rgba(232,72,73,.38);transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(232,72,73,.48)}
+.btn:active{transform:none}
+.btn:before{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:shine 3.2s infinite}
+@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
+.btn svg{width:26px;height:26px;flex:none;transition:transform .2s}
+.btn:hover svg{transform:translateX(4px)}
+.btn[disabled]{opacity:.7;cursor:wait}
+.trust{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.trust span{display:flex;align-items:center;gap:4px}
+.trust svg{width:14px;height:14px;color:var(--ok)}
+.done{text-align:center;padding:26px 6px 10px}
+.done .ck{width:86px;height:86px;margin:0 auto 14px}
+.done .ck circle{stroke-dasharray:252;stroke-dashoffset:252;animation:draw .7s ease forwards}
+.done .ck path{stroke-dasharray:60;stroke-dashoffset:60;animation:draw .45s .55s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.done h4{font-family:var(--head);font-weight:800;font-size:30px;margin-bottom:8px}
+.done p{color:var(--muted)}
+.done .home-btn{display:inline-flex;margin-top:18px;font-weight:700;color:var(--red-dk);text-decoration:none;border-bottom:2px solid}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+
+/* ===== STOCK ===== */
+.stock{padding:56px 0 70px;scroll-margin-top:60px}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.shead h2{font-size:clamp(30px,4vw,46px)}
+.shead p{color:var(--muted);margin-top:6px}
+.vid-h{display:flex;align-items:center;gap:10px;margin:30px 0 14px;font-family:var(--head);font-weight:700;font-size:18px}
+.vid-h i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-style:normal;font-size:13px;box-shadow:0 0 0 6px rgba(232,72,73,.15)}
+.filters{position:sticky;top:64px;z-index:5;background:rgba(247,245,244,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);margin:34px -20px 0;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.chips-f{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.chips-f::-webkit-scrollbar{display:none}
+.chips-f button{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;font-size:13.5px;cursor:pointer;transition:all .2s}
+.chips-f button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.filters select,.filters input{height:38px;border:1.5px solid var(--line);border-radius:999px;background:#fff;padding:0 14px;font-size:13.5px;font-weight:500}
+.filters input{width:180px}
+.sort-row{flex:1 1 100%;display:flex;align-items:center;gap:10px;min-width:0}
+.sort-l{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sort-l svg{width:16px;height:16px;color:var(--red)}
+.chips-f.sort button{padding:6px 12px;font-size:13px}
+.chips-f.sort button.on{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 6px 14px rgba(232,72,73,.3)}
+.count{font-size:13px;color:var(--muted);margin:16px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:18px;margin-top:14px}
+.car{position:relative;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(60,20,15,.07),0 0 0 1px var(--line);display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;opacity:0;transform:translateY(18px)}
+.car.in{opacity:1;transform:none}
+.car:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(60,20,15,.13),0 0 0 1px var(--line)}
+.car.sel{box-shadow:0 0 0 2.5px var(--red),0 22px 44px rgba(232,72,73,.22)}
+.c-img{position:relative;height:178px;display:grid;place-items:center;padding:18px 16px 22px;background:radial-gradient(ellipse at 50% 60%,#fff 0%,#f6f1f0 62%,#eee6e4 100%)}
+.c-img:before{content:"";position:absolute;left:12%;right:12%;bottom:16px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(40,10,5,.25),transparent)}
+.c-img img{position:relative;max-height:136px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(40,10,5,.18));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.car:hover .c-img img{transform:scale(1.05) translateY(-3px)}
+.tagv{position:absolute;z-index:2;top:12px;left:12px;display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:4px 10px 4px 6px;border-radius:999px}
+.tagv i{width:14px;height:14px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-style:normal;font-size:7px}
+.fuel{position:absolute;z-index:2;top:12px;right:12px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.fuel.e{color:#1e6bd6}.fuel.h{color:var(--ok)}.fuel.g{color:#b37400}
+.c-bd{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.c-mk{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+.c-md{font-family:var(--head);font-weight:800;font-size:21px;line-height:1.1;margin:2px 0 3px}
+.c-vr{font-size:12.5px;color:var(--muted);min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-ch{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 12px}
+.c-ch span{font-size:11.5px;font-weight:600;background:#f4efee;border-radius:999px;padding:3px 9px}
+.c-ft{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto}
+.c-pr{font-family:var(--head);font-weight:800;font-size:24px;line-height:1}
+.c-pr small{display:block;font-family:Inter,sans-serif;font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+.pick{display:inline-flex;align-items:center;gap:6px;border:0;cursor:pointer;font-weight:700;font-size:13.5px;padding:10px 14px;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 8px 18px rgba(232,72,73,.3);transition:transform .15s,background .2s;white-space:nowrap}
+.pick:hover{transform:translateY(-2px);background:var(--red-dk)}
+.car.sel .pick{background:var(--ok);box-shadow:0 8px 18px rgba(34,160,90,.3)}
+.c-ln{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none}
+.c-ln:hover{color:var(--red-dk)}
+.more{display:flex;justify-content:center;margin-top:26px}
+.more button{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:12px 26px;font-weight:700;cursor:pointer;transition:all .2s}
+.more button:hover{background:var(--ink);color:#fff}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0}
+
+footer{background:var(--night);color:#a8a19e;font-size:13px;text-align:center;padding:30px 16px 34px}
+footer img{height:26px;margin:0 auto 12px;filter:brightness(0) invert(1);opacity:.9}
+footer a{color:#fff}
+.sticky{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;padding:10px 10px 10px 16px;border-radius:18px;background:rgba(20,18,18,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 34px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;transform:translateY(140%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.sticky.show{transform:none}
+.sticky .t{font-size:12.5px;line-height:1.25;flex:1;color:#bdb5b2}
+.sticky .t b{display:block;font-family:var(--head);font-weight:700;font-size:15px;color:#fff}
+.sticky a{background:var(--red);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 18px;border-radius:999px;white-space:nowrap}
+
+@media (max-width:980px){
+  .hero .wrap{grid-template-columns:1fr;gap:22px}
+  .card,.hl{max-width:560px;width:100%;margin:0 auto}
+  .see{display:none}
+}
+@media (max-width:600px){
+  .wrap{padding:0 16px}
+  .top .wrap{height:58px}.brand img{height:24px}
+  .nav .txt{display:none}.nav a{padding:8px 10px}
+  .hero{padding:20px 0 40px}
+  .hl h1{font-size:34px}
+  .badges{gap:6px;margin-top:14px}.pill{font-size:12.5px;padding:6px 11px 6px 7px}
+  .wiz{padding:16px 16px 18px;min-height:380px}
+  .chead{padding:16px 16px 0}.selbox{margin:14px 16px 0}
+  .q{font-size:20px}
+  .stock-cta .l{display:none}
+  .stock-cta{top:27px}
+  .filters{top:58px;margin:26px -16px 0;padding:10px 16px}
+  .filters{position:static}
+  .filters input{width:100%;order:3;flex:1 1 100%}.filters select{flex:1}
+  .sort-row{order:4}
+  .grid{grid-template-columns:1fr 1fr;gap:10px}
+  .c-img{height:120px;padding:12px 8px 16px}.c-img img{max-height:92px}
+  .c-bd{padding:10px 11px 12px}.c-md{font-size:16px}.c-vr{font-size:11.5px}
+  .c-ch{gap:4px;margin:8px 0 10px}.c-ch span{font-size:10.5px;padding:2px 7px}
+  .c-ft{flex-direction:column;align-items:stretch;gap:8px}.c-pr{font-size:19px}
+  .pick{justify-content:center;padding:9px 10px;font-size:12.5px}
+  .tagv{top:8px;left:8px;font-size:10px}
+  .c-ln{font-size:10.5px;margin-top:8px;white-space:nowrap}.fuel{top:8px;right:8px;font-size:10px}
+  body{padding-bottom:84px}
+}
+@media (min-width:981px){.sticky{display:none}}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.pill,.car,.auto span{opacity:1!important;transform:none!important}.spark,.rip{display:none}#intro{display:none}}
+</style>
+</head>
+<body class="lock">
+
+<!-- ===== PANTALLA DE CARGA ===== -->
+<div id="intro" role="presentation" title="Saltar">
+  <img class="lg" src="logo.png" alt="manchacars.com">
+  <div class="tg">Compra · Venta · Revisados</div>
+  <div class="road"><div class="fill"></div><div class="icar" id="i-car"><svg class="isvg" viewBox="0 0 260 96" aria-hidden="true">
+  <g class="sp" stroke="#e84849" stroke-width="4" stroke-linecap="round"><line x1="-6" y1="44" x2="-32" y2="44"/><line x1="-2" y1="58" x2="-36" y2="58"/><line x1="-8" y1="72" x2="-28" y2="72"/></g>
+  <ellipse cx="130" cy="88" rx="118" ry="6" fill="rgba(60,10,5,.18)"/>
+  <g class="bd">
+    <path d="M10 70v-12q0-8 8-10l40-8 34-24q8-5 18-5h66q12 0 21 7l30 24 20 4q13 3 13 15v9q0 6-6 6H16q-6 0-6-6z" fill="#e84849"/>
+    <path d="M10 66h240v6q0 6-6 6H16q-6 0-6-6z" fill="#c52f31"/>
+    <path d="M98 22q6-4 14-4h28v26H72zM148 18h20q10 0 17 6l24 20h-61z" fill="#2b3440"/>
+    <path d="M144 18v28" stroke="#e84849" stroke-width="5"/>
+    <path d="M100 26l-10 8M155 24l-6 10" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+    <path d="M236 54l14 4v6h-15z" fill="#ffe08a"/>
+    <path d="M12 52h8v8h-9z" fill="#7a0e12"/>
+    <rect x="118" y="50" width="14" height="3" rx="1.5" fill="#fff" opacity=".6"/><rect x="170" y="50" width="14" height="3" rx="1.5" fill="#fff" opacity=".6"/>
+  </g>
+  <g class="wh"><circle cx="64" cy="76" r="16" fill="#141212"/><circle cx="64" cy="76" r="8" fill="#d9d9d9"/><path d="M64 69v14M57 76h14" stroke="#777" stroke-width="2.4"/></g>
+  <g class="wh"><circle cx="202" cy="76" r="16" fill="#141212"/><circle cx="202" cy="76" r="8" fill="#d9d9d9"/><path d="M202 69v14M195 76h14" stroke="#777" stroke-width="2.4"/></g>
+</svg></div></div>
+  <div class="pct">Arrancando motores <b id="pct">0%</b></div>
+</div>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="brand" href="https://www.manchacars.com/" aria-label="Manchacars · Inicio"><img src="logo.png" alt="manchacars.com"></a>
+    <nav class="nav">
+      <a class="home" href="https://www.manchacars.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg><span class="txt">Inicio</span></a>
+      <a href="#coches" class="txt">Coches</a>
+      <a href="#formulario" class="cta">Quiero info</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO + FORMULARIO ===== -->
+<section class="hero" id="formulario">
+  <div class="wrap">
+    <div class="hl">
+      <span class="kick"><i></i>Coches de ocasión · Ciudad Real</span>
+      <h1 class="h">Tu próximo coche,<br><span class="r">revisado y con garantía</span></h1>
+      <div class="badges">
+        <span class="pill"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></b>Miles de coches vendidos</span>
+        <span class="pill"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></b>100% revisados</span>
+        <span class="pill"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></b>Garantía 12 meses</span>
+        <span class="pill"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></b>Financiación</span>
+      </div>
+      <a class="see" href="#coches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>¿Ya tienes uno en mente? <b>Mira todos los coches</b></a>
+    </div>
+
+    <div class="card" id="card">
+      <div class="chead">
+        <div class="ch-row">
+          <h3 id="ch-t">Encuentra tu coche</h3>
+          <div class="st" id="ch-s">Paso 1 · menos de 1 minuto</div>
+          <a class="stock-cta" id="stock-cta" href="#coches"><span class="sc-th" id="sc-th"></span><span class="l">Ver coches</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+        </div>
+        <div class="pbar"><div class="fill" id="pfill"></div><div class="mv" id="pcar" data-car></div></div>
+      </div>
+      <div class="selbox" id="selbox">
+        <div class="sb-row">
+          <img id="sb-img" src="data:," alt="">
+          <div class="sb-txt"><b id="sb-n"></b><span class="sb-p" id="sb-d"></span></div>
+          <div class="sb-act"><button type="button" id="sb-c">Cambiar</button><button type="button" id="sb-x" aria-label="Quitar coche">✕</button></div>
+        </div>
+        <div class="auto" id="sb-auto"></div>
+      </div>
+
+      <form class="wiz" id="wiz" novalidate>
+        <div class="step" data-step="tipo">
+          <div class="q">¿Qué coche buscas?</div>
+          <div class="opts c2">
+            <div class="opt"><input type="radio" name="tipo" id="t1" value="Compacto / utilitario"><label for="t1"><svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M6 31v-6l5-2 7-7h12l7 7 5 2v6z"/><circle cx="14" cy="32" r="4" fill="#fff"/><circle cx="35" cy="32" r="4" fill="#fff"/></svg><span>Compacto<small>ciudad y día a día</small></span></label></div>
+            <div class="opt"><input type="radio" name="tipo" id="t2" value="SUV"><label for="t2"><svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M5 32v-8l6-2 6-8h15l7 8 5 2v8z"/><circle cx="14" cy="33" r="4.5" fill="#fff"/><circle cx="35" cy="33" r="4.5" fill="#fff"/></svg><span>SUV<small>alto y versátil</small></span></label></div>
+            <div class="opt"><input type="radio" name="tipo" id="t3" value="Familiar / monovolumen"><label for="t3"><svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M4 31v-7l5-2 5-7h22l6 7 3 2v7z"/><circle cx="13" cy="32" r="4" fill="#fff"/><circle cx="36" cy="32" r="4" fill="#fff"/></svg><span>Familiar<small>espacio y maletero</small></span></label></div>
+            <div class="opt"><input type="radio" name="tipo" id="t4" value="4x4 / todoterreno"><label for="t4"><svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M5 33V20l5-1 3-7h20l4 7 6 1v13z"/><circle cx="14" cy="34" r="5" fill="#fff"/><circle cx="35" cy="34" r="5" fill="#fff"/></svg><span>4x4<small>campo y 7 plazas</small></span></label></div>
+            <div class="opt" style="grid-column:1/-1"><input type="radio" name="tipo" id="t5" value="Berlina / premium"><label for="t5"><svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M3 30v-4l8-3 8-7h11l8 7 7 2v5z"/><circle cx="13" cy="31" r="4" fill="#fff"/><circle cx="36" cy="31" r="4" fill="#fff"/></svg><span>Berlina o premium<small>BMW, Mercedes, Tesla…</small></span></label></div>
+          </div>
+        </div>
+
+        <div class="step" data-step="presupuesto">
+          <div class="q">¿Cuánto quieres gastar?</div>
+          <div class="opts c2">
+            <div class="opt"><input type="radio" name="presupuesto" id="b1" value="Hasta 8.000 €" data-s="1"><label for="b1">Hasta 8.000 €</label></div>
+            <div class="opt"><input type="radio" name="presupuesto" id="b2" value="8.000 – 12.000 €" data-s="2"><label for="b2">8.000 – 12.000 €</label></div>
+            <div class="opt"><input type="radio" name="presupuesto" id="b3" value="12.000 – 18.000 €" data-s="2"><label for="b3">12.000 – 18.000 €</label></div>
+            <div class="opt"><input type="radio" name="presupuesto" id="b4" value="18.000 – 25.000 €" data-s="3"><label for="b4">18.000 – 25.000 €</label></div>
+            <div class="opt"><input type="radio" name="presupuesto" id="b5" value="Más de 25.000 €" data-s="3"><label for="b5">Más de 25.000 €</label></div>
+            <div class="opt"><input type="radio" name="presupuesto" id="b6" value="Aún no lo sé" data-s="1"><label for="b6">Aún no lo sé</label></div>
+          </div>
+        </div>
+
+        <div class="step" data-step="combustible">
+          <div class="q">¿Gasolina, diésel…?</div>
+          <div class="opts c2">
+            <div class="opt"><input type="radio" name="combustible" id="k1" value="Gasolina"><label for="k1">⛽ Gasolina</label></div>
+            <div class="opt"><input type="radio" name="combustible" id="k2" value="Diésel"><label for="k2">🛢️ Diésel</label></div>
+            <div class="opt"><input type="radio" name="combustible" id="k3" value="Híbrido"><label for="k3">🍃 Híbrido</label></div>
+            <div class="opt"><input type="radio" name="combustible" id="k4" value="Eléctrico"><label for="k4">⚡ Eléctrico</label></div>
+            <div class="opt"><input type="radio" name="combustible" id="k5" value="GLP"><label for="k5">🔵 GLP</label></div>
+            <div class="opt"><input type="radio" name="combustible" id="k6" value="Me da igual"><label for="k6">🤷 Me da igual</label></div>
+          </div>
+        </div>
+
+        <div class="step" data-step="plan">
+          <div class="q" id="q-plan">Tres toques y listo</div>
+          <div class="ql">¿Cuándo lo quieres?</div>
+          <div class="opts c3">
+            <div class="opt"><input type="radio" name="cuando" id="u1" value="Ya mismo" data-s="3"><label for="u1">Ya mismo</label></div>
+            <div class="opt"><input type="radio" name="cuando" id="u2" value="En 1–3 meses" data-s="2"><label for="u2">1 – 3 meses</label></div>
+            <div class="opt"><input type="radio" name="cuando" id="u3" value="Solo mirando" data-s="0"><label for="u3">Solo miro</label></div>
+          </div>
+          <div class="ql" style="margin-top:14px">¿Cómo lo pagarías?</div>
+          <div class="opts c3">
+            <div class="opt"><input type="radio" name="pago" id="g1" value="Al contado" data-s="2"><label for="g1">Contado</label></div>
+            <div class="opt"><input type="radio" name="pago" id="g2" value="Financiado" data-s="2"><label for="g2">Financiado</label></div>
+            <div class="opt"><input type="radio" name="pago" id="g3" value="Aún no lo sé" data-s="1"><label for="g3">No lo sé</label></div>
+          </div>
+          <div class="ql" style="margin-top:14px">¿Entregas tu coche actual?</div>
+          <div class="opts c3">
+            <div class="opt"><input type="radio" name="entrega" id="e1" value="Sí" data-s="1"><label for="e1">Sí</label></div>
+            <div class="opt"><input type="radio" name="entrega" id="e2" value="No" data-s="0"><label for="e2">No</label></div>
+            <div class="opt"><input type="radio" name="entrega" id="e3" value="Quizá" data-s="0"><label for="e3">Quizá</label></div>
+          </div>
+        </div>
+
+        <div class="step" data-step="contacto">
+          <div class="q">¿A quién llamamos?</div>
+          <div class="summary" id="summary"></div>
+          <div class="field" id="f-name"><input type="text" name="nombre" id="in-n" placeholder=" " autocomplete="given-name"><label for="in-n">Nombre</label><div class="em">Escribe tu nombre.</div></div>
+          <div class="field" id="f-phone"><input type="tel" name="telefono" id="in-t" placeholder=" " autocomplete="tel" inputmode="tel"><label for="in-t">Teléfono (WhatsApp)</label><div class="em">Teléfono no válido (9 cifras).</div></div>
+          <div class="field" id="f-email"><input type="email" name="email" id="in-e" placeholder=" " autocomplete="email" inputmode="email"><label for="in-e">Correo electrónico <span class="opt-tag">(opcional)</span></label><div class="fh">🔒 Solo para enviarte la propuesta. Nada de promociones.</div><div class="em">Correo no válido.</div></div>
+          <label class="consent" id="f-consent"><input type="checkbox" name="consentimiento" value="si"><span>Acepto que Manchacars me contacte sobre mi solicitud según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.<span class="em">Necesitamos tu permiso para contactarte.</span></span></label>
+          <button class="btn" type="submit" id="send"><span>Quiero mi propuesta</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
+          <div class="trust">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>Sin compromiso</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>Respuesta rápida</span>
+          </div>
+        </div>
+
+        <div class="step" data-step="done">
+          <div class="done">
+            <svg class="ck" viewBox="0 0 90 90" fill="none" stroke="#e84849" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="45" cy="45" r="40"/><path d="M27 46l12 12 24-26"/></svg>
+            <h4>¡Recibido!</h4>
+            <p id="done-txt">Te llamamos muy pronto.</p>
+            <a class="home-btn" href="https://www.manchacars.com/">Ir a manchacars.com →</a>
+          </div>
+        </div>
+
+        <div class="nav2" id="nav2">
+          <button type="button" class="back" id="back">← Atrás</button>
+          <span class="hint" id="hint">Toca una opción</span>
+          <button type="button" class="nextb" id="nextb">Siguiente →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COCHES ===== -->
+<section class="stock" id="coches">
+  <div class="wrap">
+    <div class="shead">
+      <div><h2 class="h">Nuestros <span class="r">coches</span></h2><p>Pulsa «¡Lo quiero!» y lo preseleccionamos en el formulario.</p></div>
+    </div>
+
+    <div class="vid-h"><i>▶</i>Los de nuestros vídeos</div>
+    <div class="grid" id="g-vid"></div>
+
+    <div class="filters" id="filters">
+      <div class="chips-f" id="f-tipo">
+        <button type="button" class="on" data-t="">Todos</button>
+        <button type="button" data-t="Compacto">Compactos</button>
+        <button type="button" data-t="SUV">SUV</button>
+        <button type="button" data-t="4x4">4x4</button>
+        <button type="button" data-t="Familiar">Familiares</button>
+        <button type="button" data-t="Berlina">Berlinas</button>
+      </div>
+      <select id="f-comb" aria-label="Combustible"><option value="">Combustible</option><option>Gasolina</option><option>Diésel</option><option value="Híbrido">Híbrido</option><option>Eléctrico</option><option>GLP</option></select>
+      <input type="search" id="f-q" placeholder="Buscar marca o modelo" aria-label="Buscar">
+      <div class="sort-row">
+        <span class="sort-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></svg>Ordenar</span>
+        <div class="chips-f sort" id="f-sort" role="radiogroup" aria-label="Ordenar coches">
+          <button type="button" class="on" data-s="rel" role="radio" aria-checked="true">Recomendados</button>
+          <button type="button" data-s="pa" role="radio" aria-checked="false">💶 Menos precio</button>
+          <button type="button" data-s="pd" role="radio" aria-checked="false">💶 Más precio</button>
+          <button type="button" data-s="km" role="radio" aria-checked="false">🛣️ Menos km</button>
+          <button type="button" data-s="kmd" role="radio" aria-checked="false">🛣️ Más km</button>
+          <button type="button" data-s="new" role="radio" aria-checked="false">📅 Más nuevos</button>
+          <button type="button" data-s="old" role="radio" aria-checked="false">📅 Más antiguos</button>
+        </div>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="g-all"></div>
+    <div class="more" id="more"><button type="button">Ver más coches</button></div>
+  </div>
+</section>
+
+<footer>
+  <img src="logo.png" alt="manchacars.com">
+  <div>Manchacars · Arroyo Pellejero, 5 · Torralba de Calatrava (Ciudad Real)</div>
+  <div style="margin-top:6px"><a href="tel:+34926841483">926 84 14 83</a> · <a href="mailto:ventas@manchacars.com">ventas@manchacars.com</a> · <a href="https://www.manchacars.com/">manchacars.com</a> · <a href="privacidad.html">Privacidad</a></div>
+</footer>
+
+<div class="sticky" id="sticky"><div class="t" id="sticky-t"><b>Encuentra tu coche</b>Menos de 1 minuto</div><a href="#formulario" id="sticky-a">Empezar</a></div>
+<canvas id="confetti"></canvas>
+
+<script src="coches.js"></script>
+<script>
+/* ===================== CONFIG =====================
+   FORM_ENDPOINT: URL /exec del Apps Script que guarda los leads en Google Sheets (ver apps-script-leads.gs).
+   Vacío = modo prueba (muestra la confirmación y escribe el lead en la consola). */
+const FORM_ENDPOINT = "";
+/* Píxel de Meta de manchacars.com. Déjalo vacío para no cargarlo. */
+const META_PIXEL_ID = "1322926622862376";
+
+/* Coches que salen en los vídeos de la campaña: aparecen primero, en este orden. */
+/* Vídeos "Video Lux 1-5" y "Manchacars 1-8". El SUV negro 3304 NBX de los Video Lux no está publicado en manchacars.com. */
+const DESTACADOS = [
+  {id:4574, video:"Video Lux 1"},   // YOOUDOOO 6 Adventurer (4x4 verde)
+  {id:4134, video:"Video Lux 1"},   // BMW Serie 1 116d · 9216-NFT
+  {id:4083, video:"Video Lux 1"},   // Mercedes CLA 180 AMG Line · 2495-NFF
+  {id:3953, video:"Video Lux 1"},   // Bestune T90 (SUV blanco nuevo)
+  {id:4656, video:"Manchacars 8"},  // Ford EcoSport ST Line · 3682-MDY
+  {id:4614, video:"Manchacars 8"},  // SEAT León FR 25 Aniversario
+  {id:4674, video:"Manchacars 8"},  // Opel Corsa 1.5D · 0982-LNK
+  {id:4594, video:"Manchacars 8"},  // Renault Captur GLP · 5293-LYB
+  {id:4688, video:"Manchacars 8"}   // Peugeot 3008 GT Line · 5678-KPT
+];
+
+/* ===================== utilidades ===================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const eur = n => n == null ? "Consultar" : String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+const kmf = n => n == null ? null : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " km";
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const track = (ev, p) => { try{ if(window.fbq) fbq("trackCustom", ev, p || {}); }catch(_){} };
+const img = c => `img/coches/${c.id}.webp`;
+const COCHES = (window.COCHES || []);
+const byId = id => COCHES.find(c => c.id === +id);
+const FEAT = DESTACADOS.map(d => byId(d.id)).filter(Boolean);
+const featIds = new Set(FEAT.map(c => c.id));
+const nombre = c => `${c.marca} ${c.modelo}`;
+
+/* Meta Pixel */
+if(META_PIXEL_ID){
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', META_PIXEL_ID); fbq('track', 'PageView');
+}
+
+/* ===== PANTALLA DE CARGA: turismo recorriendo la barra ===== */
+(function intro(){
+  const el = $("#intro"), pct = $("#pct");
+  let loaded = document.readyState === "complete", done = false;
+  addEventListener("load", () => loaded = true);
+  const finish = () => {
+    if(done) return; done = true;
+    el.style.setProperty("--p", 1); pct.textContent = "100%";
+    el.classList.add("go");
+    setTimeout(() => { el.classList.add("out"); document.body.classList.remove("lock"); document.body.classList.add("ready"); updateSticky(); }, reduce ? 0 : 650);
+    setTimeout(() => el.remove(), reduce ? 50 : 1450);
+  };
+  el.addEventListener("click", finish);
+  if(reduce || document.hidden){ finish(); return; }
+  setTimeout(finish, 5200);                       // red de seguridad: nunca se queda atascada
+  document.addEventListener("visibilitychange", () => { if(document.hidden) finish(); });
+  const t0 = performance.now(), MIN = 2000, MAX = 4500;
+  (function tick(now){
+    if(done) return;
+    const t = now - t0;
+    let p = Math.min(1, t / MIN); p = 1 - Math.pow(1 - p, 2.2);
+    if(!loaded && t < MAX) p = Math.min(p, .9);
+    el.style.setProperty("--p", p.toFixed(4)); pct.textContent = Math.round(p*100) + "%";
+    if(p >= 1) return finish();
+    requestAnimationFrame(tick);
+  })(t0);
+})();
+
+/* cochecito de la barra de progreso */
+$("[data-car]").innerHTML = `<svg class="csvg" viewBox="0 0 120 50" aria-hidden="true">
+  <path d="M6 36v-8l12-4 14-12h40l18 12 18 4q6 2 6 8v2H6z" fill="#e84849"/>
+  <path d="M36 15h18v10H24zM60 15h12l14 10H60z" fill="#2b3440"/>
+  <g class="wh"><circle cx="30" cy="39" r="8" fill="#141212"/><circle cx="30" cy="39" r="3.5" fill="#d9d9d9"/></g>
+  <g class="wh"><circle cx="92" cy="39" r="8" fill="#141212"/><circle cx="92" cy="39" r="3.5" fill="#d9d9d9"/></g></svg>`;
+
+/* ===================== LISTADO ===================== */
+const fuelCls = f => /eléctr/i.test(f) ? "e" : /híbrid/i.test(f) ? "h" : /glp/i.test(f) ? "g" : "";
+const cardHTML = (c, i) => {
+  const chips = [c.anio, kmf(c.km), c.cv ? c.cv + " CV" : null, c.caja].filter(Boolean);
+  const vid = featIds.has(c.id);
+  return `<article class="car" data-id="${c.id}" style="transition-delay:${(i % 8) * 50}ms">
+    <div class="c-img">${vid ? '<span class="tagv"><i>▶</i>En vídeo</span>' : ""}<span class="fuel ${fuelCls(c.comb)}">${esc(c.comb)}</span>
+      <img src="${img(c)}" alt="${esc(nombre(c))}" loading="lazy" decoding="async" width="300" height="180"></div>
+    <div class="c-bd">
+      <div class="c-mk">${esc(c.marca)}</div>
+      <div class="c-md">${esc(c.modelo)}</div>
+      <div class="c-vr" title="${esc(c.version)}">${esc(c.version) || "&nbsp;"}</div>
+      <div class="c-ch">${chips.map(x => `<span>${esc(x)}</span>`).join("")}</div>
+      <div class="c-ft"><div class="c-pr"><small>Precio</small>${eur(c.precio)}</div>
+        <button type="button" class="pick" data-pick="${c.id}">¡Lo quiero!</button></div>
+      <a class="c-ln" href="${esc(c.url)}" target="_blank" rel="noopener">Ficha en manchacars.com ↗</a>
+    </div></article>`;
+};
+const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.08});
+const observe = root => root.querySelectorAll(".car:not(.in)").forEach(el => reduce ? el.classList.add("in") : io.observe(el));
+
+$("#g-vid").innerHTML = FEAT.map(cardHTML).join("");
+observe($("#g-vid"));
+
+const F = { tipo:"", comb:"", sort:"rel", q:"", shown:24 };
+function filtered(){
+  const q = F.q.trim().toLowerCase();
+  const filtering = !!(F.tipo || F.comb || q || F.sort !== "rel");
+  let list = COCHES.filter(c => (filtering || !featIds.has(c.id))
+    && (!F.tipo || c.tipo === F.tipo)
+    && (!F.comb || c.comb.startsWith(F.comb))
+    && (!q || `${c.marca} ${c.modelo} ${c.version}`.toLowerCase().includes(q)));
+  const s = { pa:(a,b)=>a.precio-b.precio, pd:(a,b)=>b.precio-a.precio, km:(a,b)=>a.km-b.km, kmd:(a,b)=>b.km-a.km, new:(a,b)=>(b.anio||0)-(a.anio||0) || a.km-b.km, old:(a,b)=>(a.anio||9999)-(b.anio||9999) || b.km-a.km,
+              rel:(a,b)=>((b.anio||0)-(a.anio||0)) || (a.precio-b.precio) }[F.sort];
+  return list.sort(s);
+}
+function renderList(){
+  const list = filtered();
+  $("#g-all").innerHTML = list.length ? list.slice(0, F.shown).map(cardHTML).join("") : `<div class="empty">No hay coches con esos filtros. Prueba con otros o <a href="#formulario">cuéntanos qué buscas</a> y te lo buscamos.</div>`;
+  const filt = !!(F.tipo || F.comb || F.q.trim()), all = filt || F.sort !== "rel";
+  const SORTN = {pa:"de menos a más precio", pd:"de más a menos precio", km:"de menos a más km", kmd:"de más a menos km", new:"de más nuevo a más antiguo", old:"de más antiguo a más nuevo"};
+  $("#count").textContent = `${list.length + (all ? 0 : FEAT.length)} coches disponibles${filt ? " con estos filtros" : ""}${SORTN[F.sort] ? " · ordenados " + SORTN[F.sort] : ""}`;
+  $("#more").style.display = list.length > F.shown ? "" : "none";
+  observe($("#g-all")); markSel();
+}
+$("#f-tipo").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  $$("#f-tipo button").forEach(x => x.classList.toggle("on", x === b)); F.tipo = b.dataset.t; F.shown = 24; renderList(); track("FilterTipo", {tipo:F.tipo}); });
+$("#f-comb").onchange = e => { F.comb = e.target.value; F.shown = 24; renderList(); };
+$("#f-sort").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  $$("#f-sort button").forEach(x => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-checked", on); });
+  F.sort = b.dataset.s; F.shown = 24; renderList(); track("SortCars", {sort:F.sort});
+  if($("#filters").getBoundingClientRect().top < 0) $("#filters").scrollIntoView({behavior:"smooth", block:"start"}); });
+let qT; $("#f-q").oninput = e => { clearTimeout(qT); qT = setTimeout(() => { F.q = e.target.value; F.shown = 24; renderList(); }, 180); };
+$("#more button").onclick = () => { F.shown += 24; renderList(); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-pick]"); if(b) selectCar(+b.dataset.pick, true); });
+$("#sc-th").innerHTML = FEAT.slice(0,3).map(c => `<img src="${img(c)}" alt="">`).join("");
+
+/* ===================== FORMULARIO ===================== */
+const form = $("#wiz");
+const state = { car:null, cur:0, started:false, submitted:false };
+const FLOW_ANY = ["tipo","presupuesto","combustible","plan","contacto"];
+const FLOW_CAR = ["plan","contacto"];
+const flow = () => state.car ? FLOW_CAR : FLOW_ANY;
+const TIPO_FORM = { Compacto:"Compacto / utilitario", SUV:"SUV", Familiar:"Familiar / monovolumen", "4x4":"4x4 / todoterreno", Berlina:"Berlina / premium" };
+const bucket = p => p <= 8000 ? "Hasta 8.000 €" : p <= 12000 ? "8.000 – 12.000 €" : p <= 18000 ? "12.000 – 18.000 €" : p <= 25000 ? "18.000 – 25.000 €" : "Más de 25.000 €";
+const combForm = f => /híbrid/i.test(f) ? "Híbrido" : /eléctr/i.test(f) ? "Eléctrico" : /glp/i.test(f) ? "GLP" : /diés/i.test(f) ? "Diésel" : "Gasolina";
+const val = n => form.querySelector(`input[name="${n}"]:checked`)?.value || "";
+const checkRadio = (name, value) => { const r = [...form.querySelectorAll(`input[name="${name}"]`)].find(x => x.value === value); if(r) r.checked = true; };
+
+function markSel(){ $$(".car").forEach(el => { const on = !!state.car && +el.dataset.id === state.car.id; el.classList.toggle("sel", on); const b = el.querySelector(".pick"); if(b) b.textContent = on ? "Elegido ✓" : "¡Lo quiero!"; }); }
+function selectCar(id, scroll){
+  const c = id ? byId(id) : null;
+  state.car = c; markSel();
+  if(state.submitted) return;
+  const sb = $("#selbox");
+  if(c){
+    checkRadio("tipo", TIPO_FORM[c.tipo]); checkRadio("presupuesto", bucket(c.precio)); checkRadio("combustible", combForm(c.comb));
+    $("#sb-img").src = img(c); $("#sb-img").alt = nombre(c);
+    $("#sb-n").textContent = nombre(c); $("#sb-d").textContent = eur(c.precio) + (c.anio ? ` · ${c.anio}` : "");
+    $("#sb-auto").innerHTML = [TIPO_FORM[c.tipo], c.comb, c.caja].filter(Boolean).map((t,i) => `<span style="animation-delay:${.25 + i*.15}s">${esc(t)}</span>`).join("");
+    sb.classList.remove("on"); void sb.offsetWidth; sb.classList.add("on");
+    $("#ch-t").textContent = "¡Buena elección!";
+    $("#q-plan").textContent = `Tres toques sobre tu ${c.modelo}`;
+    track("CarSelect", {car: nombre(c), id: c.id});
+  } else {
+    sb.classList.remove("on");
+    $("#ch-t").textContent = "Encuentra tu coche";
+    $("#q-plan").textContent = "Tres toques y listo";
+  }
+  state.cur = 0; state.started = true; render();
+  if(scroll) $("#card").scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
+}
+$("#sb-c").onclick = () => $("#coches").scrollIntoView({behavior:"smooth", block:"start"});
+$("#sb-x").onclick = () => selectCar(null, false);
+
+function valid(name){
+  if(name === "plan") return !!val("cuando") && !!val("pago") && !!val("entrega");
+  if(name === "contacto") return true;
+  return !!val(name);
+}
+function render(){
+  const f = flow(), name = f[state.cur];
+  form.querySelectorAll(".step").forEach(s => s.classList.toggle("on", s.dataset.step === name));
+  const p = state.submitted ? 1 : state.cur / f.length;
+  $("#pfill").style.width = (p*100) + "%";
+  const pc = $("#pcar"); pc.style.left = (p*100) + "%"; pc.style.transform = `translateX(${-85*p}%)`;
+  pc.classList.add("still"); clearTimeout(render.t);
+  requestAnimationFrame(() => { pc.classList.remove("still"); render.t = setTimeout(() => pc.classList.add("still"), 650); });
+  $("#ch-s").textContent = name === "contacto" ? "Último paso · sin compromiso" : `Paso ${state.cur+1} de ${f.length}`;
+  $("#back").classList.toggle("show", state.cur > 0);
+  $("#hint").style.visibility = name === "contacto" ? "hidden" : "visible";
+  $("#nav2").classList.toggle("ready", name !== "contacto" && valid(name));
+  $("#stock-cta").hidden = !!state.car || state.submitted;
+  if(name === "contacto") summary();
+  updateSticky();
+}
+function go(d){
+  const f = flow();
+  state.cur = Math.max(0, Math.min(f.length-1, state.cur + d));
+  render();
+  if($("#card").getBoundingClientRect().top < 0) $("#card").scrollIntoView({behavior:"smooth", block:"start"});
+  track("FormStep", {step: f[state.cur], car: !!state.car});
+  if(f[state.cur] === "contacto") setTimeout(() => { if(matchMedia("(hover:hover)").matches) $("#in-n").focus({preventScroll:true}); }, 400);
+}
+function prefs(){
+  const c = state.car;
+  return { tipo: c ? TIPO_FORM[c.tipo] : val("tipo"), presupuesto: c ? bucket(c.precio) : val("presupuesto"), combustible: c ? c.comb : val("combustible") };
+}
+function summary(){
+  const p = prefs(), c = state.car;
+  $("#summary").innerHTML = [c && nombre(c), !c && p.tipo, !c && p.presupuesto, !c && p.combustible, val("cuando"), val("pago"), val("entrega") === "Sí" && "Entrega su coche"]
+    .filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("");
+}
+
+/* animación satisfactoria al elegir */
+let lastTap = null;
+form.addEventListener("pointerdown", e => { const l = e.target.closest(".opt label"); if(l) lastTap = {l, x:e.clientX, y:e.clientY}; });
+function celebrate(input){
+  if(reduce) return;
+  const label = form.querySelector(`label[for="${input.id}"]`), opt = input.closest(".opt"); if(!label) return;
+  const r = label.getBoundingClientRect();
+  const tap = lastTap && lastTap.l === label ? lastTap : {x: r.left + r.width/2, y: r.top + r.height/2}; lastTap = null;
+  const rip = document.createElement("span"); rip.className = "rip"; const d = Math.max(r.width, r.height) * 2.4;
+  Object.assign(rip.style, {left:(tap.x - r.left)+"px", top:(tap.y - r.top)+"px", width:d+"px", height:d+"px"});
+  label.appendChild(rip); setTimeout(() => rip.remove(), 650);
+  label.classList.remove("boom"); void label.offsetWidth; label.classList.add("boom");
+  const ox = input.closest(".c3") ? r.width/2 : r.width - 20, oy = r.height/2;
+  for(let i = 0; i < 12; i++){
+    const s = document.createElement("i"); s.className = "spark" + (i%3===0 ? " y" : "") + (i%2 ? " l" : "");
+    const a = Math.PI*2*i/12 + Math.random()*.4, dist = 24 + Math.random()*22;
+    s.style.left = ox + "px"; s.style.top = oy + "px";
+    s.style.setProperty("--dx", Math.cos(a)*dist + "px"); s.style.setProperty("--dy", Math.sin(a)*dist + "px"); s.style.setProperty("--r", (a*57) + "deg");
+    opt.appendChild(s); setTimeout(() => s.remove(), 700);
+  }
+  try{ if(navigator.vibrate && navigator.userActivation?.hasBeenActive) navigator.vibrate(12); }catch(_){}
+}
+form.addEventListener("change", e => {
+  const t = e.target;
+  if(!state.started){ state.started = true; track("FormStart"); }
+  t.closest(".field,.consent")?.classList.remove("err");
+  const name = flow()[state.cur];
+  $("#nav2").classList.toggle("ready", name !== "contacto" && valid(name));
+  if(t.type === "radio") celebrate(t);
+  if(t.type === "radio" && valid(name) && name !== "contacto"){
+    const at = state.cur, pb = $(".pbar"); pb.classList.remove("pulse"); void pb.offsetWidth; pb.classList.add("pulse");
+    setTimeout(() => { if(state.cur === at) go(1); }, reduce ? 200 : 560);
+  }
+});
+form.addEventListener("input", e => { const f = e.target.closest(".field"); if(!f) return; f.classList.remove("err"); f.classList.toggle("okv", checkField(f.id) && !!e.target.value.trim()); });
+const telClean = () => form.telefono.value.replace(/[\s.\-()]/g, "").replace(/^(\+34|0034)/, "");
+function checkField(id){
+  if(id === "f-name") return form.nombre.value.trim().length >= 2;
+  if(id === "f-phone") return /^[6789]\d{8}$/.test(telClean());
+  if(id === "f-email"){ const v = form.email.value.trim(); return !v || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+  return true;
+}
+$("#back").onclick = () => go(-1);
+$("#nextb").onclick = () => go(1);
+
+function score(){
+  const s = n => +(form.querySelector(`input[name="${n}"]:checked`)?.dataset.s || 0);
+  const pres = state.car ? 2 : s("presupuesto");
+  const t = pres + s("cuando") + s("pago") + s("entrega") + (state.car ? 1 : 0);
+  return t >= 7 ? "caliente" : t >= 4 ? "templado" : "frio";
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = [];
+  ["f-name","f-phone","f-email"].forEach(id => { const bad = !checkField(id); $("#"+id).classList.toggle("err", bad); if(bad) errs.push(id); });
+  const cb = !form.consentimiento.checked; $("#f-consent").classList.toggle("err", cb); if(cb) errs.push("f-consent");
+  if(errs.length){ $("#"+errs[0]).querySelector("input")?.focus(); return; }
+  const c = state.car, p = prefs(), tel = telClean();
+  const data = {
+    vehiculo: c ? `${nombre(c)} ${c.version} · ${c.matricula || "ref. " + c.id} · ${eur(c.precio)}` : "Ninguno en concreto",
+    vehiculo_url: c ? c.url : "",
+    tipo: p.tipo, presupuesto: p.presupuesto, combustible: p.combustible,
+    cuando: val("cuando"), pago: val("pago"), entrega: val("entrega"),
+    nombre: form.nombre.value.trim(), telefono: "+34" + tel, email: form.email.value.trim(),
+    calidad_lead: score(), origen: "meta-ads-landing", utm: Object.fromEntries(new URLSearchParams(location.search)),
+    fecha: new Date().toISOString()
+  };
+  const btn = $("#send"); btn.disabled = true; btn.querySelector("span").textContent = "Enviando…";
+  try{
+    if(FORM_ENDPOINT){
+      // text/plain evita el preflight CORS, que Apps Script no admite
+      const r = await fetch(FORM_ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(data), redirect:"follow"});
+      let res = {ok:true}; try{ res = await r.json(); }catch(_){}
+      if(!r.ok || res.ok === false) throw new Error(res.error || r.status);
+    } else console.log("Lead (modo prueba, sin endpoint):", data);
+    state.submitted = true;
+    form.querySelectorAll(".step").forEach(s => s.classList.toggle("on", s.dataset.step === "done"));
+    $("#nav2").style.display = "none";
+    $("#pfill").style.width = "100%"; $("#pcar").style.left = "100%"; $("#pcar").style.transform = "translateX(-85%)";
+    $("#ch-t").textContent = "¡Solicitud enviada!"; $("#ch-s").textContent = "Te llamamos muy pronto";
+    $("#selbox").classList.remove("on"); $("#stock-cta").hidden = true;
+    $("#done-txt").textContent = `Gracias, ${data.nombre.split(" ")[0]}. Te llamamos al ${tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}${c ? ` con todos los detalles del ${nombre(c)}` : " con los coches que encajan contigo"}.`;
+    confetti(); updateSticky();
+    try{ if(window.fbq) fbq("track", "Lead", {content_name: c ? nombre(c) : p.tipo, value: c ? c.precio : undefined, currency:"EUR", lead_quality: data.calidad_lead}); }catch(_){}
+  }catch(err){
+    btn.disabled = false; btn.querySelector("span").textContent = "Quiero mi propuesta";
+    alert("No se ha podido enviar. Inténtalo de nuevo en unos segundos.");
+  }
+});
+
+/* confeti */
+function confetti(){
+  if(reduce) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d");
+  cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio);
+  const r = $("#card").getBoundingClientRect(), ox = r.left + r.width/2, oy = Math.max(80, r.top + 120);
+  const cols = ["#e84849","#ff8a8b","#ffd36b","#9e1519","#ffffff"];
+  const P = Array.from({length:150}, () => ({x:ox, y:oy, vx:(Math.random()-.5)*16, vy:-Math.random()*15-4, s:Math.random()*7+4, r:Math.random()*6, vr:(Math.random()-.5)*.4, c:cols[Math.random()*cols.length|0]}));
+  let f = 0;
+  (function loop(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    P.forEach(p => { p.vy += .42; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); ctx.restore(); });
+    if(++f < 160) requestAnimationFrame(loop); else ctx.clearRect(0,0,innerWidth,innerHeight);
+  })();
+}
+
+/* cabecera y barra fija en móvil */
+addEventListener("scroll", () => $("#top").classList.toggle("sh", scrollY > 10), {passive:true});
+let cardVisible = true;
+new IntersectionObserver(([e]) => { cardVisible = e.isIntersecting; updateSticky(); }, {threshold:.1}).observe($("#card"));
+function updateSticky(){
+  $("#sticky").classList.toggle("show", !cardVisible && !state.submitted && !document.body.classList.contains("lock"));
+  const left = flow().length - state.cur, c = state.car;
+  $("#sticky-t").innerHTML = c ? `<b>${esc(nombre(c))}</b>Te quedan ${left} paso${left>1?"s":""}`
+    : !state.started ? "<b>Encuentra tu coche</b>Menos de 1 minuto"
+    : `<b>Te quedan ${left} paso${left>1?"s":""}</b>Tus respuestas siguen ahí`;
+  $("#sticky-a").textContent = state.started ? "Continuar" : "Empezar";
+}
+renderList();
+render();
+</script>
+</body>
+</html>
