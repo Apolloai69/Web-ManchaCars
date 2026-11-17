@@ -253,9 +253,21 @@ body.lock{overflow:hidden}
 .c-ft{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto}
 .c-pr{font-family:var(--head);font-weight:800;font-size:24px;line-height:1}
 .c-pr small{display:block;font-family:Inter,sans-serif;font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+.c-pr .c-mes{font-size:.6em;font-weight:700;color:var(--muted);margin-left:2px}
+.c-pr .c-fin{display:inline-block;margin-top:5px;font-family:Inter,sans-serif;font-style:normal;font-size:10.5px;font-weight:700;color:var(--red);background:rgba(232,72,73,.1);padding:3px 7px;border-radius:999px;letter-spacing:.02em}
+.c-tot{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;padding:8px 10px;border:1px dashed rgba(0,0,0,.18);border-radius:10px;background:transparent;font:600 12px/1 Inter,sans-serif;color:var(--muted);cursor:pointer}
+.c-tot svg{width:15px;height:15px;transition:transform .25s}
+.c-tot[aria-expanded="true"] svg{transform:rotate(180deg)}
+.c-tot:hover{color:var(--red);border-color:var(--red)}
+.c-totbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding:10px;border-radius:10px;background:rgba(232,72,73,.07);animation:totIn .25s ease}
+.c-totbox small{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.c-totbox b{font-family:var(--head);font-size:16px}
+.c-totbox[hidden]{display:none}
+@keyframes totIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .pick{display:inline-flex;align-items:center;gap:6px;border:0;cursor:pointer;font-weight:700;font-size:13.5px;padding:10px 14px;border-radius:999px;background:var(--red);color:#fff;box-shadow:0 8px 18px rgba(232,72,73,.3);transition:transform .15s,background .2s;white-space:nowrap}
 .pick:hover{transform:translateY(-2px);background:var(--red-dk)}
 .car.sel .pick{background:var(--ok);box-shadow:0 8px 18px rgba(34,160,90,.3)}
+.cuota-nota{margin:-4px 0 14px;font-size:11.5px;color:var(--muted)}
 .c-ln{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none}
 .c-ln:hover{color:var(--red-dk)}
 .more{display:flex;justify-content:center;margin-top:26px}
@@ -472,7 +484,7 @@ footer a{color:#fff}
 <section class="stock" id="coches">
   <div class="wrap">
     <div class="shead">
-      <div><h2 class="h">Nuestros <span class="r">coches</span></h2><p>Pulsa «¡Lo quiero!» y lo preseleccionamos en el formulario.</p></div>
+      <div><h2 class="h">Nuestros <span class="r">coches</span></h2><p>Pulsa «¡Lo quiero!» y lo preseleccionamos en el formulario. Toca un coche para ver su precio total.</p></div>
     </div>
 
     <div class="vid-h"><i>▶</i>Los de nuestros vídeos</div>
@@ -503,6 +515,7 @@ footer a{color:#fff}
       </div>
     </div>
     <p class="count" id="count"></p>
+    <p class="cuota-nota">*Cuota mensual orientativa financiando el precio total a 60 meses (5 años). Sujeta a estudio y aprobación de la entidad financiera.</p>
     <div class="grid" id="g-all"></div>
     <div class="more" id="more"><button type="button">Ver más coches</button></div>
   </div>
@@ -552,6 +565,10 @@ const DESTACADOS = [
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const eur = n => n == null ? "Consultar" : String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+/* Cuota mensual financiando el precio total a 5 años (60 meses): precio × 0,021207 */
+const CUOTA_FACTOR = 0.021207;
+const cuota = n => n == null ? null : n * CUOTA_FACTOR;
+const eurMes = n => n == null ? "Consultar" : cuota(n).toLocaleString("es-ES", {minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
 const kmf = n => n == null ? null : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " km";
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -618,8 +635,10 @@ const cardHTML = (c, i) => {
       <div class="c-md">${esc(c.modelo)}</div>
       <div class="c-vr" title="${esc(c.version)}">${esc(c.version) || "&nbsp;"}</div>
       <div class="c-ch">${chips.map(x => `<span>${esc(x)}</span>`).join("")}</div>
-      <div class="c-ft"><div class="c-pr"><small>Precio</small>${eur(c.precio)}</div>
+      <div class="c-ft"><div class="c-pr"><small>Precio al mes</small>${eurMes(c.precio)}<span class="c-mes">/mes</span><em class="c-fin">Financiado a 5 años</em></div>
         <button type="button" class="pick" data-pick="${c.id}">¡Lo quiero!</button></div>
+      <button type="button" class="c-tot" data-tot="${c.id}" aria-expanded="false"><span>Ver precio total</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      <div class="c-totbox" hidden><div><small>Precio total al contado</small><b>${eur(c.precio)}</b></div><div><small>Financiado a 60 meses</small><b>${eurMes(c.precio)}/mes</b></div></div>
       <a class="c-ln" href="${esc(c.url)}" target="_blank" rel="noopener">Ficha en manchacars.com ↗</a>
     </div></article>`;
 };
@@ -660,6 +679,15 @@ $("#f-sort").addEventListener("click", e => { const b = e.target.closest("button
 let qT; $("#f-q").oninput = e => { clearTimeout(qT); qT = setTimeout(() => { F.q = e.target.value; F.shown = 24; renderList(); }, 180); };
 $("#more button").onclick = () => { F.shown += 24; renderList(); };
 document.addEventListener("click", e => { const b = e.target.closest("[data-pick]"); if(b) selectCar(+b.dataset.pick, true); });
+// Al pulsar en el coche (foto, datos o «Ver precio total») se despliega el precio total
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-pick], a")) return;
+  const card = e.target.closest(".car"); if(!card) return;
+  const btn = card.querySelector(".c-tot"), box = card.querySelector(".c-totbox"); if(!btn || !box) return;
+  const open = box.hidden; box.hidden = !open; btn.setAttribute("aria-expanded", open);
+  btn.querySelector("span").textContent = open ? "Ocultar precio total" : "Ver precio total";
+  if(open) track("ViewTotalPrice", {id: card.dataset.id});
+});
 $("#sc-th").innerHTML = FEAT.slice(0,3).map(c => `<img src="${img(c)}" alt="">`).join("");
 
 /* ===================== FORMULARIO ===================== */
@@ -683,7 +711,7 @@ function selectCar(id, scroll){
   if(c){
     checkRadio("tipo", TIPO_FORM[c.tipo]); checkRadio("presupuesto", bucket(c.precio)); checkRadio("combustible", combForm(c.comb));
     $("#sb-img").src = img(c); $("#sb-img").alt = nombre(c);
-    $("#sb-n").textContent = nombre(c); $("#sb-d").textContent = eur(c.precio) + (c.anio ? ` · ${c.anio}` : "");
+    $("#sb-n").textContent = nombre(c); $("#sb-d").textContent = eurMes(c.precio) + "/mes" + (c.anio ? ` · ${c.anio}` : "");
     $("#sb-auto").innerHTML = [TIPO_FORM[c.tipo], c.comb, c.caja].filter(Boolean).map((t,i) => `<span style="animation-delay:${.25 + i*.15}s">${esc(t)}</span>`).join("");
     sb.classList.remove("on"); void sb.offsetWidth; sb.classList.add("on");
     $("#ch-t").textContent = "¡Buena elección!";
@@ -799,7 +827,7 @@ form.addEventListener("submit", async e => {
   if(errs.length){ $("#"+errs[0]).querySelector("input")?.focus(); return; }
   const c = state.car, p = prefs(), tel = telClean();
   const data = {
-    vehiculo: c ? `${nombre(c)} ${c.version} · ${c.matricula || "ref. " + c.id} · ${eur(c.precio)}` : "Ninguno en concreto",
+    vehiculo: c ? `${nombre(c)} ${c.version} · ${c.matricula || "ref. " + c.id} · ${eur(c.precio)} (${eurMes(c.precio)}/mes a 5 años)` : "Ninguno en concreto",
     vehiculo_url: c ? c.url : "",
     coche: c ? {id:c.id, marca:c.marca, modelo:c.modelo, version:c.version, precio:c.precio, km:c.km, anio:c.anio, comb:c.comb, caja:c.caja, cv:c.cv, matricula:c.matricula} : null,
     tipo: p.tipo, presupuesto: p.presupuesto, combustible: p.combustible,
@@ -831,7 +859,7 @@ form.addEventListener("submit", async e => {
       "②  COCHE QUE LE INTERESA": "━━━━━━━━━━━━━━━━━━",
       "🚗 Coche": c ? `${nombre(c)} ${c.version}` : "Ninguno en concreto: busca opciones",
       ...(c ? {
-        "💶 Precio": eur(c.precio),
+        "💶 Precio": `${eurMes(c.precio)}/mes a 5 años · total ${eur(c.precio)}`,
         "📋 Datos": [c.anio, c.km != null ? `${c.km.toLocaleString("es-ES")} km` : "", c.comb, c.caja, c.cv ? `${c.cv} CV` : ""].filter(Boolean).join(" · "),
         "🔖 Matrícula": c.matricula || `ref. ${c.id}`,
         "🔗 Ficha en la web": c.url,
