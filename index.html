@@ -568,7 +568,7 @@ const eur = n => n == null ? "Consultar" : String(Math.round(n)).replace(/\B(?=(
 /* Cuota mensual financiando el precio total a 5 años (60 meses): precio × 0,021207 */
 const CUOTA_FACTOR = 0.021207;
 const cuota = n => n == null ? null : n * CUOTA_FACTOR;
-const eurMes = n => n == null ? "Consultar" : cuota(n).toLocaleString("es-ES", {minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+const eurMes = n => { if(n == null) return "Consultar"; const [e, d] = cuota(n).toFixed(2).split("."); return e.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + d + " €"; };
 const kmf = n => n == null ? null : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " km";
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
