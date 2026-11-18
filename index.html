@@ -590,6 +590,25 @@ const nombre = c => `${c.marca} ${c.modelo}`;
 if(META_PIXEL_IDS.length){
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   META_PIXEL_IDS.forEach(id => fbq('init', id)); fbq('track', 'PageView');
+  /* Respaldo: si el navegador bloquea connect.facebook.net (bloqueadores de anuncios, DNS, antivirus...),
+     los eventos se mandan directamente a facebook.com/tr con una imagen, igual que hace el píxel por dentro.
+     Así no se pierden PageView, ViewContent, Contact ni Lead. */
+  const fbJs = document.querySelector('script[src*="connect.facebook.net"]');
+  if(fbJs) fbJs.addEventListener("error", fbFallback);
+}
+function fbBeacon(ev, params){
+  META_PIXEL_IDS.forEach(id => {
+    const q = new URLSearchParams({id, ev, dl: location.href, rl: document.referrer, if: "false", ts: Date.now()});
+    Object.entries(params || {}).forEach(([k, v]) => { if(v != null) q.append(`cd[${k}]`, typeof v === "object" ? JSON.stringify(v) : String(v)); });
+    new Image().src = "https://www.facebook.com/tr/?" + q;
+  });
+}
+function fbFallback(){
+  if(window.fbq && window.fbq.__respaldo) return;
+  const pendientes = (window.fbq && window.fbq.queue) ? [...window.fbq.queue] : [];
+  const f = function(cmd, ev, p){ if(cmd === "track" || cmd === "trackCustom") fbBeacon(ev, p); };
+  f.__respaldo = true; window.fbq = f;
+  pendientes.forEach(a => f.apply(null, Array.from(a)));
 }
 
 /* Contacto directo: clic en teléfono, email o WhatsApp → evento "Contact" */
