@@ -544,8 +544,11 @@ const WEB3FORMS_KEYS = [
   "844dc97c-3a93-4502-93f7-d934ccc6f5ab",   // facilitada por el cliente el 11/11/2026
   "8141c068-c89e-447d-9b48-633ab7d35753",   // APOLO MK (apollo.ai.contact@gmail.com), la misma de la web de la agencia
 ];
-/* Píxel de Meta de manchacars.com. Déjalo vacío para no cargarlo. */
-const META_PIXEL_ID = "1322926622862376";
+/* Píxeles de Meta. El primero es "Manchacars Pixel", el de la cuenta publicitaria 658966010526757
+   desde la que salen las campañas: sin él, el Administrador de anuncios no ve las conversiones.
+   El segundo es el píxel anterior de manchacars.com, que se mantiene para no perder su histórico.
+   Todos reciben los mismos eventos. Deja la lista vacía para no cargar ninguno. */
+const META_PIXEL_IDS = ["1599242208622975", "1322926622862376"];
 
 /* Coches que salen en los vídeos de la campaña: aparecen primero, en este orden. */
 /* Vídeos "Video Lux 1-5" y "Manchacars 1-8". El SUV negro 3304 NBX de los Video Lux no está publicado en manchacars.com. */
@@ -573,6 +576,8 @@ const kmf = n => n == null ? null : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const track = (ev, p) => { try{ if(window.fbq) fbq("trackCustom", ev, p || {}); }catch(_){} };
+/* Eventos estándar de Meta (los que se pueden elegir como conversión en las campañas) */
+const trackStd = (ev, p) => { try{ if(window.fbq) fbq("track", ev, p || {}); }catch(_){} };
 const IMG_V = "2"; // súbelo si cambias fotos: obliga a los móviles a descargarlas de nuevo
 const img = c => `img/coches/${c.id}.webp?v=${IMG_V}`;
 const COCHES = (window.COCHES || []);
@@ -582,10 +587,18 @@ const featIds = new Set(FEAT.map(c => c.id));
 const nombre = c => `${c.marca} ${c.modelo}`;
 
 /* Meta Pixel */
-if(META_PIXEL_ID){
+if(META_PIXEL_IDS.length){
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', META_PIXEL_ID); fbq('track', 'PageView');
+  META_PIXEL_IDS.forEach(id => fbq('init', id)); fbq('track', 'PageView');
 }
+
+/* Contacto directo: clic en teléfono, email o WhatsApp → evento "Contact" */
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="tel:"], a[href^="mailto:"], a[href*="wa.me/"], a[href*="api.whatsapp.com"]');
+  if(!a) return;
+  const h = a.getAttribute("href");
+  trackStd("Contact", {method: h.startsWith("tel:") ? "telefono" : h.startsWith("mailto:") ? "email" : "whatsapp"});
+});
 
 /* ===== PANTALLA DE CARGA: turismo recorriendo la barra ===== */
 (function intro(){
@@ -717,6 +730,7 @@ function selectCar(id, scroll){
     $("#ch-t").textContent = "¡Buena elección!";
     $("#q-plan").textContent = `Tres toques sobre tu ${c.modelo}`;
     track("CarSelect", {car: nombre(c), id: c.id});
+    trackStd("ViewContent", {content_name: nombre(c), content_ids: [String(c.id)], content_type: "product", value: c.precio ?? undefined, currency: "EUR"});
   } else {
     sb.classList.remove("on");
     $("#ch-t").textContent = "Encuentra tu coche";
