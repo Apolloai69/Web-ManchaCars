@@ -936,7 +936,13 @@ form.addEventListener("submit", async e => {
     $("#selbox").classList.remove("on"); $("#stock-cta").hidden = true;
     $("#done-txt").textContent = `Gracias, ${data.nombre.split(" ")[0]}. Te llamamos al ${tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}${c ? ` con todos los detalles del ${nombre(c)}` : " con los coches que encajan contigo"}.`;
     confetti(); updateSticky();
-    try{ if(window.fbq) fbq("track", "Lead", {content_name: c ? nombre(c) : p.tipo, value: c ? c.precio : undefined, currency:"EUR", lead_quality: data.calidad_lead}); }catch(_){}
+    /* Conversión del formulario. La campaña optimiza por "Enviar solicitud" (SubmitApplication);
+       Lead se mantiene para informes y para el píxel antiguo. */
+    try{ if(window.fbq){
+      const conv = {content_name: c ? nombre(c) : p.tipo, value: c ? c.precio : undefined, currency:"EUR", lead_quality: data.calidad_lead};
+      fbq("track", "SubmitApplication", conv);
+      fbq("track", "Lead", conv);
+    } }catch(_){}
   }catch(err){
     btn.disabled = false; btn.querySelector("span").textContent = "Quiero mi propuesta";
     alert("No se ha podido enviar. Inténtalo de nuevo en unos segundos.");
