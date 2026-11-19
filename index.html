@@ -578,6 +578,12 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const track = (ev, p) => { try{ if(window.fbq) fbq("trackCustom", ev, p || {}); }catch(_){} };
 /* Eventos estándar de Meta (los que se pueden elegir como conversión en las campañas) */
 const trackStd = (ev, p) => { try{ if(window.fbq) fbq("track", ev, p || {}); }catch(_){} };
+/* Igual que track(), pero solo una vez por visita (para no contar dos veces a quien vuelve atrás) */
+const trackedOnce = new Set();
+const trackOnce = (ev, p) => { if(trackedOnce.has(ev)) return; trackedOnce.add(ev); track(ev, p); };
+/* Embudo del formulario: el número de paso es fijo para que se pueda comparar siempre igual.
+   Si la persona elige un coche, se salta los pasos 1-3 y empieza en el 4. */
+const PASOS = {tipo:"Formulario_Paso1_Tipo", presupuesto:"Formulario_Paso2_Presupuesto", combustible:"Formulario_Paso3_Combustible", plan:"Formulario_Paso4_Plan", contacto:"Formulario_Paso5_Contacto"};
 const IMG_V = "2"; // súbelo si cambias fotos: obliga a los móviles a descargarlas de nuevo
 const img = c => `img/coches/${c.id}.webp?v=${IMG_V}`;
 const COCHES = (window.COCHES || []);
@@ -618,6 +624,47 @@ document.addEventListener("click", e => {
   const h = a.getAttribute("href");
   trackStd("Contact", {method: h.startsWith("tel:") ? "telefono" : h.startsWith("mailto:") ? "email" : "whatsapp"});
 });
+
+/* ===== Comportamiento en la página (eventos personalizados del píxel) ===== */
+/* Entra en la página: PageView (estándar) + Pagina_Visita con el anuncio de origen */
+(() => { const u = new URLSearchParams(location.search);
+  track("Pagina_Visita", {anuncio: u.get("utm_content") || "", campana: u.get("utm_campaign") || "", origen: u.get("utm_source") || (document.referrer ? "referencia" : "directo")}); })();
+/* Hasta dónde baja (25/50/75/100 %) */
+addEventListener("scroll", () => {
+  const h = document.documentElement.scrollHeight - innerHeight; if(h <= 0) return;
+  const pct = scrollY / h * 100;
+  [25, 50, 75, 100].forEach(n => { if(pct >= n - 1) trackOnce("Pagina_Scroll_" + n); });
+}, {passive:true});
+/* Cuánto tiempo se queda (solo cuenta con la pestaña visible) */
+(() => { let seg = 0; setInterval(() => { if(document.visibilityState !== "visible") return; seg += 5;
+  [15, 30, 60, 120, 300].forEach(n => { if(seg === n) trackOnce("Pagina_Tiempo_" + n + "s"); }); }, 5000); })();
+/* Llega a cada sección */
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ trackOnce("Ver_Seccion_" + e.target.id); io.unobserve(e.target); } }), {threshold: .35});
+  ["formulario", "coches"].forEach(id => { const el = document.getElementById(id); if(el) io.observe(el); });
+}
+/* Clics en botones y enlaces */
+const CLICS = [
+  ["header .cta, a.cta", "Click_Quiero_Info"],
+  ["header a.txt[href='#coches']", "Click_Menu_Coches"],
+  ["#sticky-a", "Click_Barra_Empezar"],
+  ["a.see", "Click_Mira_Todos_Los_Coches"],
+  ["#stock-cta", "Click_Ver_Coches_Formulario"],
+  ["#more button", "Click_Ver_Mas_Coches"],
+  ["#sb-c", "Click_Cambiar_Coche"],
+  ["#sb-x", "Click_Quitar_Coche"],
+  [".empty a", "Click_Cuentanos_Que_Buscas"],
+  ["a[href*='manchacars.com']:not([href^='mailto'])", "Click_Web_Manchacars"],
+  ["a[href$='privacidad.html'], a[href='privacidad']", "Click_Privacidad"],
+  ["a[href^='tel:']", "Click_Telefono"],
+  ["a[href^='mailto:']", "Click_Email"],
+  ["a[href*='wa.me/'], a[href*='api.whatsapp.com']", "Click_WhatsApp"]
+];
+document.addEventListener("click", e => {
+  for(const [sel, ev] of CLICS){ const el = e.target.closest(sel); if(el){ track(ev, {texto: (el.textContent || "").trim().slice(0, 40)}); break; } }
+});
+/* Sale de la página: cuánto había avanzado en el formulario */
+addEventListener("pagehide", () => { if(state.started && !state.submitted) track("Formulario_Abandonado", {ultimo_paso: flow()[state.cur]}); });
 
 /* ===== PANTALLA DE CARGA: turismo recorriendo la barra ===== */
 (function intro(){
@@ -784,11 +831,26 @@ function render(){
 }
 function go(d){
   const f = flow();
+  if(d > 0 && PASOS[f[state.cur]]) trackOnce(PASOS[f[state.cur]], pasoInfo(f[state.cur]));
   state.cur = Math.max(0, Math.min(f.length-1, state.cur + d));
   render();
   if($("#card").getBoundingClientRect().top < 0) $("#card").scrollIntoView({behavior:"smooth", block:"start"});
   track("FormStep", {step: f[state.cur], car: !!state.car});
+  if(d < 0) track("Formulario_Atras", {a: f[state.cur]});
   if(f[state.cur] === "contacto") setTimeout(() => { if(matchMedia("(hover:hover)").matches) $("#in-n").focus({preventScroll:true}); }, 400);
+}
+function pasoInfo(name){
+  const o = {con_coche: !!state.car};
+  if(name === "plan"){ o.cuando = val("cuando"); o.pago = val("pago"); o.entrega = val("entrega"); }
+  else if(name !== "contacto") o[name] = val(name);
+  if(state.car) o.coche = nombre(state.car);
+  return o;
+}
+/* Paso 5 (datos de contacto válidos) y formulario completo (además, acepta la privacidad) */
+function checkContacto(){
+  if(!checkField("f-name") || !checkField("f-phone") || !form.telefono.value.trim()) return;
+  trackOnce(PASOS.contacto, pasoInfo("contacto"));
+  if(checkField("f-email") && form.consentimiento.checked) trackOnce("Formulario_Completado", {con_coche: !!state.car, con_email: !!form.email.value.trim()});
 }
 function prefs(){
   const c = state.car;
@@ -824,7 +886,7 @@ function celebrate(input){
 }
 form.addEventListener("change", e => {
   const t = e.target;
-  if(!state.started){ state.started = true; track("FormStart"); }
+  if(!state.started){ state.started = true; track("FormStart"); trackOnce("Formulario_Inicio", {con_coche: !!state.car}); }
   t.closest(".field,.consent")?.classList.remove("err");
   const name = flow()[state.cur];
   $("#nav2").classList.toggle("ready", name !== "contacto" && valid(name));
@@ -834,7 +896,8 @@ form.addEventListener("change", e => {
     setTimeout(() => { if(state.cur === at) go(1); }, reduce ? 200 : 560);
   }
 });
-form.addEventListener("input", e => { const f = e.target.closest(".field"); if(!f) return; f.classList.remove("err"); f.classList.toggle("okv", checkField(f.id) && !!e.target.value.trim()); });
+form.addEventListener("change", checkContacto);
+form.addEventListener("input", e => { const f = e.target.closest(".field"); if(!f) return; clearTimeout(checkContacto.t); checkContacto.t = setTimeout(checkContacto, 800); f.classList.remove("err"); f.classList.toggle("okv", checkField(f.id) && !!e.target.value.trim()); });
 const telClean = () => form.telefono.value.replace(/[\s.\-()]/g, "").replace(/^(\+34|0034)/, "");
 function checkField(id){
   if(id === "f-name") return form.nombre.value.trim().length >= 2;
@@ -857,7 +920,8 @@ form.addEventListener("submit", async e => {
   const errs = [];
   ["f-name","f-phone","f-email"].forEach(id => { const bad = !checkField(id); $("#"+id).classList.toggle("err", bad); if(bad) errs.push(id); });
   const cb = !form.consentimiento.checked; $("#f-consent").classList.toggle("err", cb); if(cb) errs.push("f-consent");
-  if(errs.length){ $("#"+errs[0]).querySelector("input")?.focus(); return; }
+  if(errs.length){ track("Formulario_Error_Datos", {campos: errs.join(",")}); $("#"+errs[0]).querySelector("input")?.focus(); return; }
+  checkContacto(); track("Formulario_Click_Enviar", {con_coche: !!state.car});
   const c = state.car, p = prefs(), tel = telClean();
   const data = {
     vehiculo: c ? `${nombre(c)} ${c.version} · ${c.matricula || "ref. " + c.id} · ${eur(c.precio)} (${eurMes(c.precio)}/mes a 5 años)` : "Ninguno en concreto",
@@ -941,9 +1005,11 @@ form.addEventListener("submit", async e => {
     try{ if(window.fbq){
       const conv = {content_name: c ? nombre(c) : p.tipo, value: c ? c.precio : undefined, currency:"EUR", lead_quality: data.calidad_lead};
       fbq("track", "SubmitApplication", conv);
+      fbq("trackCustom", "Formulario_Enviado", conv);
       fbq("track", "Lead", conv);
     } }catch(_){}
   }catch(err){
+    track("Formulario_Error_Envio", {error: String(err && err.message || err).slice(0, 80)});
     btn.disabled = false; btn.querySelector("span").textContent = "Quiero mi propuesta";
     alert("No se ha podido enviar. Inténtalo de nuevo en unos segundos.");
   }
