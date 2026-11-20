@@ -374,7 +374,7 @@ footer a{color:#fff}
       <div class="chead">
         <div class="ch-row">
           <h3 id="ch-t">Encuentra tu coche</h3>
-          <div class="st" id="ch-s">Paso 1 · menos de 1 minuto</div>
+          <div class="st" id="ch-s">Paso 1 · 30 segundos</div>
           <a class="stock-cta" id="stock-cta" href="#coches"><span class="sc-th" id="sc-th"></span><span class="l">Ver coches</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
         </div>
         <div class="pbar"><div class="fill" id="pfill"></div><div class="mv" id="pcar" data-car></div></div>
@@ -413,20 +413,8 @@ footer a{color:#fff}
           </div>
         </div>
 
-        <div class="step" data-step="combustible">
-          <div class="q">¿Gasolina, diésel…?</div>
-          <div class="opts c2">
-            <div class="opt"><input type="radio" name="combustible" id="k1" value="Gasolina"><label for="k1">⛽ Gasolina</label></div>
-            <div class="opt"><input type="radio" name="combustible" id="k2" value="Diésel"><label for="k2">🛢️ Diésel</label></div>
-            <div class="opt"><input type="radio" name="combustible" id="k3" value="Híbrido"><label for="k3">🍃 Híbrido</label></div>
-            <div class="opt"><input type="radio" name="combustible" id="k4" value="Eléctrico"><label for="k4">⚡ Eléctrico</label></div>
-            <div class="opt"><input type="radio" name="combustible" id="k5" value="GLP"><label for="k5">🔵 GLP</label></div>
-            <div class="opt"><input type="radio" name="combustible" id="k6" value="Me da igual"><label for="k6">🤷 Me da igual</label></div>
-          </div>
-        </div>
-
         <div class="step" data-step="plan">
-          <div class="q" id="q-plan">Tres toques y listo</div>
+          <div class="q" id="q-plan">Dos toques y listo</div>
           <div class="ql">¿Cuándo lo quieres?</div>
           <div class="opts c3">
             <div class="opt"><input type="radio" name="cuando" id="u1" value="Ya mismo" data-s="3"><label for="u1">Ya mismo</label></div>
@@ -439,12 +427,6 @@ footer a{color:#fff}
             <div class="opt"><input type="radio" name="pago" id="g2" value="Financiado" data-s="2"><label for="g2">Financiado</label></div>
             <div class="opt"><input type="radio" name="pago" id="g3" value="Aún no lo sé" data-s="1"><label for="g3">No lo sé</label></div>
           </div>
-          <div class="ql" style="margin-top:14px">¿Entregas tu coche actual?</div>
-          <div class="opts c3">
-            <div class="opt"><input type="radio" name="entrega" id="e1" value="Sí" data-s="1"><label for="e1">Sí</label></div>
-            <div class="opt"><input type="radio" name="entrega" id="e2" value="No" data-s="0"><label for="e2">No</label></div>
-            <div class="opt"><input type="radio" name="entrega" id="e3" value="Quizá" data-s="0"><label for="e3">Quizá</label></div>
-          </div>
         </div>
 
         <div class="step" data-step="contacto">
@@ -452,7 +434,6 @@ footer a{color:#fff}
           <div class="summary" id="summary"></div>
           <div class="field" id="f-name"><input type="text" name="nombre" id="in-n" placeholder=" " autocomplete="given-name"><label for="in-n">Nombre</label><div class="em">Escribe tu nombre.</div></div>
           <div class="field" id="f-phone"><input type="tel" name="telefono" id="in-t" placeholder=" " autocomplete="tel" inputmode="tel"><label for="in-t">Teléfono (WhatsApp)</label><div class="em">Teléfono no válido (9 cifras).</div></div>
-          <div class="field" id="f-email"><input type="email" name="email" id="in-e" placeholder=" " autocomplete="email" inputmode="email"><label for="in-e">Correo electrónico <span class="opt-tag">(opcional)</span></label><div class="fh">🔒 Solo para enviarte la propuesta. Nada de promociones.</div><div class="em">Correo no válido.</div></div>
           <label class="consent" id="f-consent"><input type="checkbox" name="consentimiento" value="si"><span>Acepto que Manchacars me contacte sobre mi solicitud según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.<span class="em">Necesitamos tu permiso para contactarte.</span></span></label>
           <button class="btn" type="submit" id="send"><span>Quiero mi propuesta</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
           <div class="trust">
@@ -527,7 +508,7 @@ footer a{color:#fff}
   <div style="margin-top:6px"><a href="tel:+34926841483">926 84 14 83</a> · <a href="mailto:ventas@manchacars.com">ventas@manchacars.com</a> · <a href="https://www.manchacars.com/">manchacars.com</a> · <a href="privacidad.html">Privacidad</a></div>
 </footer>
 
-<div class="sticky" id="sticky"><div class="t" id="sticky-t"><b>Encuentra tu coche</b>Menos de 1 minuto</div><a href="#formulario" id="sticky-a">Empezar</a></div>
+<div class="sticky" id="sticky"><div class="t" id="sticky-t"><b>Encuentra tu coche</b>30 segundos</div><a href="#formulario" id="sticky-a">Empezar</a></div>
 <canvas id="confetti"></canvas>
 
 <script src="coches.js"></script>
@@ -772,7 +753,7 @@ $("#sc-th").innerHTML = FEAT.slice(0,3).map(c => `<img src="${img(c)}" alt="">`)
 /* ===================== FORMULARIO ===================== */
 const form = $("#wiz");
 const state = { car:null, cur:0, started:false, submitted:false };
-const FLOW_ANY = ["tipo","presupuesto","combustible","plan","contacto"];
+const FLOW_ANY = ["tipo","presupuesto","plan","contacto"];
 const FLOW_CAR = ["plan","contacto"];
 const flow = () => state.car ? FLOW_CAR : FLOW_ANY;
 const TIPO_FORM = { Compacto:"Compacto / utilitario", SUV:"SUV", Familiar:"Familiar / monovolumen", "4x4":"4x4 / todoterreno", Berlina:"Berlina / premium" };
@@ -794,13 +775,13 @@ function selectCar(id, scroll){
     $("#sb-auto").innerHTML = [TIPO_FORM[c.tipo], c.comb, c.caja].filter(Boolean).map((t,i) => `<span style="animation-delay:${.25 + i*.15}s">${esc(t)}</span>`).join("");
     sb.classList.remove("on"); void sb.offsetWidth; sb.classList.add("on");
     $("#ch-t").textContent = "¡Buena elección!";
-    $("#q-plan").textContent = `Tres toques sobre tu ${c.modelo}`;
+    $("#q-plan").textContent = `Dos toques sobre tu ${c.modelo}`;
     track("CarSelect", {car: nombre(c), id: c.id});
     trackStd("ViewContent", {content_name: nombre(c), content_ids: [String(c.id)], content_type: "product", value: c.precio ?? undefined, currency: "EUR"});
   } else {
     sb.classList.remove("on");
     $("#ch-t").textContent = "Encuentra tu coche";
-    $("#q-plan").textContent = "Tres toques y listo";
+    $("#q-plan").textContent = "Dos toques y listo";
   }
   state.cur = 0; state.started = true; render();
   if(scroll) $("#card").scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
@@ -809,7 +790,7 @@ $("#sb-c").onclick = () => $("#coches").scrollIntoView({behavior:"smooth", block
 $("#sb-x").onclick = () => selectCar(null, false);
 
 function valid(name){
-  if(name === "plan") return !!val("cuando") && !!val("pago") && !!val("entrega");
+  if(name === "plan") return !!val("cuando") && !!val("pago");
   if(name === "contacto") return true;
   return !!val(name);
 }
@@ -841,7 +822,7 @@ function go(d){
 }
 function pasoInfo(name){
   const o = {con_coche: !!state.car};
-  if(name === "plan"){ o.cuando = val("cuando"); o.pago = val("pago"); o.entrega = val("entrega"); }
+  if(name === "plan"){ o.cuando = val("cuando"); o.pago = val("pago"); }
   else if(name !== "contacto") o[name] = val(name);
   if(state.car) o.coche = nombre(state.car);
   return o;
@@ -850,15 +831,15 @@ function pasoInfo(name){
 function checkContacto(){
   if(!checkField("f-name") || !checkField("f-phone") || !form.telefono.value.trim()) return;
   trackOnce(PASOS.contacto, pasoInfo("contacto"));
-  if(checkField("f-email") && form.consentimiento.checked) trackOnce("Formulario_Completado", {con_coche: !!state.car, con_email: !!form.email.value.trim()});
+  if(form.consentimiento.checked) trackOnce("Formulario_Completado", {con_coche: !!state.car});
 }
 function prefs(){
   const c = state.car;
-  return { tipo: c ? TIPO_FORM[c.tipo] : val("tipo"), presupuesto: c ? bucket(c.precio) : val("presupuesto"), combustible: c ? c.comb : val("combustible") };
+  return { tipo: c ? TIPO_FORM[c.tipo] : val("tipo"), presupuesto: c ? bucket(c.precio) : val("presupuesto"), combustible: c ? c.comb : "" };
 }
 function summary(){
   const p = prefs(), c = state.car;
-  $("#summary").innerHTML = [c && nombre(c), !c && p.tipo, !c && p.presupuesto, !c && p.combustible, val("cuando"), val("pago"), val("entrega") === "Sí" && "Entrega su coche"]
+  $("#summary").innerHTML = [c && nombre(c), !c && p.tipo, !c && p.presupuesto, val("cuando"), val("pago")]
     .filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("");
 }
 
@@ -902,7 +883,6 @@ const telClean = () => form.telefono.value.replace(/[\s.\-()]/g, "").replace(/^(
 function checkField(id){
   if(id === "f-name") return form.nombre.value.trim().length >= 2;
   if(id === "f-phone") return /^[6789]\d{8}$/.test(telClean());
-  if(id === "f-email"){ const v = form.email.value.trim(); return !v || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
   return true;
 }
 $("#back").onclick = () => go(-1);
@@ -911,14 +891,14 @@ $("#nextb").onclick = () => go(1);
 function score(){
   const s = n => +(form.querySelector(`input[name="${n}"]:checked`)?.dataset.s || 0);
   const pres = state.car ? 2 : s("presupuesto");
-  const t = pres + s("cuando") + s("pago") + s("entrega") + (state.car ? 1 : 0);
-  return t >= 7 ? "caliente" : t >= 4 ? "templado" : "frio";
+  const t = pres + s("cuando") + s("pago") + (state.car ? 1 : 0);
+  return t >= 6 ? "caliente" : t >= 4 ? "templado" : "frio";
 }
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
   const errs = [];
-  ["f-name","f-phone","f-email"].forEach(id => { const bad = !checkField(id); $("#"+id).classList.toggle("err", bad); if(bad) errs.push(id); });
+  ["f-name","f-phone"].forEach(id => { const bad = !checkField(id); $("#"+id).classList.toggle("err", bad); if(bad) errs.push(id); });
   const cb = !form.consentimiento.checked; $("#f-consent").classList.toggle("err", cb); if(cb) errs.push("f-consent");
   if(errs.length){ track("Formulario_Error_Datos", {campos: errs.join(",")}); $("#"+errs[0]).querySelector("input")?.focus(); return; }
   checkContacto(); track("Formulario_Click_Enviar", {con_coche: !!state.car});
@@ -928,8 +908,8 @@ form.addEventListener("submit", async e => {
     vehiculo_url: c ? c.url : "",
     coche: c ? {id:c.id, marca:c.marca, modelo:c.modelo, version:c.version, precio:c.precio, km:c.km, anio:c.anio, comb:c.comb, caja:c.caja, cv:c.cv, matricula:c.matricula} : null,
     tipo: p.tipo, presupuesto: p.presupuesto, combustible: p.combustible,
-    cuando: val("cuando"), pago: val("pago"), entrega: val("entrega"),
-    nombre: form.nombre.value.trim(), telefono: "+34" + tel, email: form.email.value.trim(),
+    cuando: val("cuando"), pago: val("pago"),
+    nombre: form.nombre.value.trim(), telefono: "+34" + tel, email: "",
     calidad_lead: score(), origen: "meta-ads-landing", utm: Object.fromEntries(new URLSearchParams(location.search)),
     fecha: new Date().toISOString()
   };
@@ -952,7 +932,6 @@ form.addEventListener("submit", async e => {
       "👤 Nombre": data.nombre,
       "📞 Teléfono": `+34 ${telBonito}`,
       "💬 WhatsApp directo": wa,
-      "✉️ Email": data.email || "No lo ha dejado (es opcional)",
       "②  COCHE QUE LE INTERESA": "━━━━━━━━━━━━━━━━━━",
       "🚗 Coche": c ? `${nombre(c)} ${c.version}` : "Ninguno en concreto: busca opciones",
       ...(c ? {
@@ -965,11 +944,9 @@ form.addEventListener("submit", async e => {
       "③  LO QUE BUSCA": "━━━━━━━━━━━━━━━━━━",
       "📅 ¿Cuándo quiere comprar?": data.cuando || "—",
       "💳 Forma de pago": data.pago || "—",
-      "🔁 ¿Entrega su coche?": data.entrega || "—",
       ...(c ? {} : {
         "🚙 Tipo de coche": data.tipo || "—",
-        "💰 Presupuesto": data.presupuesto || "—",
-        "⛽ Combustible": data.combustible || "—"
+        "💰 Presupuesto": data.presupuesto || "—"
       }),
       "④  DE DÓNDE VIENE": "━━━━━━━━━━━━━━━━━━",
       "📣 Fuente": u.utm_source || "Landing (sin UTM)",
@@ -1039,7 +1016,7 @@ function updateSticky(){
   $("#sticky").classList.toggle("show", !cardVisible && !state.submitted && !document.body.classList.contains("lock"));
   const left = flow().length - state.cur, c = state.car;
   $("#sticky-t").innerHTML = c ? `<b>${esc(nombre(c))}</b>Te quedan ${left} paso${left>1?"s":""}`
-    : !state.started ? "<b>Encuentra tu coche</b>Menos de 1 minuto"
+    : !state.started ? "<b>Encuentra tu coche</b>30 segundos"
     : `<b>Te quedan ${left} paso${left>1?"s":""}</b>Tus respuestas siguen ahí`;
   $("#sticky-a").textContent = state.started ? "Continuar" : "Empezar";
 }
